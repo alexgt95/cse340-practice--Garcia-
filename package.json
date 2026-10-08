@@ -1,6 +1,7 @@
 {
   "name": "cse340-practice--Garcia-",
   "dependencies": {
+    "ejs": "^7.0.1",
     "express": "^5.2.1"
   },
   "type": "module",
@@ -8,7 +9,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --env-file=.env server.js",
+    "dev": "nodemon",
     "start": "node --env-file=.env server.js"
   },
   "keywords": [],
