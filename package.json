@@ -1,20 +1,24 @@
 {
   "name": "cse340-practice--Garcia-",
-  "dependencies": {
-    "ejs": "^7.0.1",
-    "express": "^5.2.1"
-  },
-  "type": "module",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
+  "type": "module",
   "scripts": {
-    "dev": "nodemon",
-    "start": "node --env-file=.env server.js"
+    "dev": "nodemon --env-file=.env server.js",
+    "start": "node --env-file-if-exists=.env server.js",
+    "restore": "node restore.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "ejs": "^7.0.1",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
@@ -22,8 +26,5 @@
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@12.4.1",
-  "devDependencies": {
-    "nodemon": "^3.1.14"
-  }
+  "packageManager": "pnpm@12.4.1"
 }
