@@ -2,28 +2,47 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
+// import router from './src/controllers/routes.js';
+
+// Log fatal errors so they show up in Render's logs
+process.on('uncaughtException', (err) => {
+    console.error('FATAL STARTUP EXCEPTION:', err);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('FATAL UNHANDLED REJECTION at:', promise, 'reason:', reason);
+    process.exit(1);
+});
 
 // ESM has no built-in __dirname, so rebuild it from this file's URL.
-// Anchoring paths to this folder (instead of the terminal's cwd) keeps
-// views/ and public/ resolving correctly no matter where node is launched from.
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(__filename);
+
+// Environment
+const NODE_ENV = process.env.NODE_ENV || 'production';
+const PORT = process.env.PORT || 3000;
+const name = process.env.NAME;
 
 // Create an instance of an Express application
 const app = express();
 
 /**
- * Configure Express middleware
+ * Configure Express
  */
+
+// Set EJS as the templating engine and tell Express where the templates are
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'src/views'));
 
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-const name = process.env.NAME;
-
 /**
  * Routes
  */
+// app.use(router);
+
 app.get('/', (req, res) => {
     const title = 'Welcome Home';
     res.render('home', { title });
@@ -39,16 +58,8 @@ app.get('/products', (req, res) => {
     res.render('products', { title });
 });
 
-// Set EJS as the templating engine
-app.set('view engine', 'ejs');
-// Tell Express where to find your templates
-app.set('views', path.join(__dirname, 'src/views'));
-
-// Define the port number the server will listen on
-const NODE_ENV = process.env.NODE_ENV || 'production';
-const PORT = process.env.PORT || 3000;
-
-// Start the server and listen on the specified port
+// Start the server. No host argument means it listens on all interfaces,
+// which is what Render needs.
 app.listen(PORT, () => {
-    console.log(`Server is running on http://127.0.0.1:${PORT}`);
+    console.log(`Server running on port ${PORT} (${NODE_ENV})`);
 });
