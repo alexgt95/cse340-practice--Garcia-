@@ -2,18 +2,6 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
-// import router from './src/controllers/routes.js';
-
-// Log fatal errors so they show up in Render's logs
-process.on('uncaughtException', (err) => {
-    console.error('FATAL STARTUP EXCEPTION:', err);
-    process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('FATAL UNHANDLED REJECTION at:', promise, 'reason:', reason);
-    process.exit(1);
-});
 
 // ESM has no built-in __dirname, so rebuild it from this file's URL.
 const __filename = fileURLToPath(import.meta.url);
@@ -22,7 +10,6 @@ const __dirname = path.dirname(__filename);
 // Environment
 const NODE_ENV = process.env.NODE_ENV || 'production';
 const PORT = process.env.PORT || 3000;
-const name = process.env.NAME;
 
 // Create an instance of an Express application
 const app = express();
@@ -41,7 +28,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 /**
  * Routes
  */
-// app.use(router);
 
 app.get('/', (req, res) => {
     const title = 'Welcome Home';

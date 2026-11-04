@@ -1,13 +1,22 @@
 <%- include('partials/header') %>
-    <main>
-      <h1><%= title %></h1>
-      <img src="/images/AlejandroGarcia.png" alt="Picture of myself">
-      <p>
-        I am aspiring to become a full stack developer because it seems fun and
-        there seems to be great things I could build that could be accessible to
-        so many devices. I enjoy running, swimming, and lifting weights. I used to
-        enjoy playing the piano and violin but my times have been more limited
-        since my mission till now.
-      </p>
-    </main>
+<main>
+  <h1><%= title %></h1>
+  <%# Coming from server.js Routes %>
+  <h2>Hi, I'm Alejandro!</h2>
+  <img src="/images/AlejandroGarcia.png" alt="Picture of Alejandro Garcia" />
+  <p>
+    I am aspiring to become a full stack developer because it seems fun and
+    there seems to be great things I could build that could be accessible to so
+    many devices. I enjoy:
+  </p>
+  <ul>
+    <li>running</li>
+    <li>swimming</li>
+    <li>weight lifting</li>
+  </ul>
+  <p>
+    I used to enjoy playing the piano and violin but my times have been more
+    limited since my mission till now.
+  </p>
+</main>
 <%- include('partials/footer') %>
