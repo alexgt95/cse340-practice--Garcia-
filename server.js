@@ -31,13 +31,6 @@ app.use(express.static(path.join(__dirname, 'public')));
  * Makes common variables available to all EJS templates without having to pass
  * them individually from each route handler
  */
-app.use((req, res, next) => {
-    // Make NODE_ENV available to all templates
-    res.locals.NODE_ENV = NODE_ENV.toLowerCase() || 'production';
-    
-    // Continue to the next middleware or route handler
-    next();
-});
 
 // Course data - place this after imports, before routes
 const courses = {
@@ -76,10 +69,81 @@ const courses = {
     }
 };
 
+app.use((req, res, next) => {
+    // Skip logging for routes that start with /. (like /.well-known/)
+    if (!req.path.startsWith('/.')) {
+        console.log(`${req.method} ${req.url}`);
+    }
+    next();
+});
+
+/**
+ * Configure Express middleware
+ */
+
+// Middleware to make NODE_ENV available to all templates
+app.use((req, res, next) => {
+    res.locals.NODE_ENV = NODE_ENV.toLowerCase() || 'production';
+
+    // Continue to the next middleware or route handler
+    next();
+});
+
+// Middleware to add global data to all templates
+app.use((req, res, next) => {
+    // Add current year for copyright
+    res.locals.currentYear = new Date().getFullYear();
+
+    next();
+});
+
+app.use((req, res, next) => {
+    // Make req.query available to all templates for debugging and conditional rendering
+    res.locals.queryParams = req.query || {};
+    next();
+});
+
+
+// Global middleware for time-based greeting
+app.use((req, res, next) => {
+    const currentHour = new Date().getHours();
+
+    if (currentHour < 12) {
+        res.locals.greeting = "<p>Good morning</p>";
+    } else if (currentHour <= 17) {
+        res.locals.greeting = "<p>Good afternoon</p>";
+    } else {
+        res.locals.greeting = "<p>Good evening</p>";
+    }
+
+    next();
+});
+
+// Global middleware for random theme selection
+app.use((req, res, next) => {
+    const themes = ['blue-theme', 'green-theme', 'red-theme'];
+
+    // Pick a random theme from the array
+    const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+    res.locals.bodyClass = randomTheme;
+
+    next();
+});
 
 /**
  * Routes
  */
+const addDemoHeaders = (req, res, next) => {
+    res.setHeader('X-Demo-Page', 'true');
+    res.setHeader('X-Middleware-Demo', 'Este mensaje viene del middleware');
+    next();
+};
+
+app.get('/demo', addDemoHeaders, (req, res) => {
+    res.render('demo', {
+        title: 'Middleware Demo Page'
+    });
+});
 
 app.get('/', (req, res) => {
     const title = 'Welcome Home';
