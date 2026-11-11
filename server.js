@@ -1,11 +1,14 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
 
 // Import MVC components
 import routes from './src/controllers/routes.js';
 import { addLocalVariables } from './src/middleware/global.js';
 import { setupDatabase, testConnection } from './src/models/setup.js';
+import { startSessionCleanup } from './src/utils/session-cleanup.js';
 
 /**
  * Server configuration
@@ -20,6 +23,11 @@ const PORT = process.env.PORT || 3000;
  */
 const app = express();
 
+// Render sits behind a proxy; without this, "secure" cookies are never set in production
+if (NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+}
+
 /**
  * Configure Express
  */
@@ -31,7 +39,31 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
 /**
- * Global Middleware
+ * Sessions, stored in PostgreSQL (the "session" table is created automatically)
+ */
+const PgSession = connectPgSimple(session);
+
+app.use(session({
+    store: new PgSession({
+        conString: process.env.DB_URL,
+        createTableIfMissing: true
+    }),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    name: 'connect.sid',
+    cookie: {
+        secure: NODE_ENV === 'production',   // HTTPS only in production
+        httpOnly: true,                      // JavaScript cannot read the cookie (protects against XSS)
+        maxAge: 24 * 60 * 60 * 1000          // 24 hours
+    }
+}));
+
+// Delete expired sessions on startup and every 12 hours
+startSessionCleanup();
+
+/**
+ * Global Middleware (must come after the session: it reads req.session)
  */
 app.use(addLocalVariables);
 
