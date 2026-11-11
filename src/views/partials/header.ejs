@@ -8,36 +8,41 @@
         <%= title %>
     </title>
     <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/catalog.css">
-    <% if (NODE_ENV.includes('dev')) { %>
-        <script>
-            // Get the current hostname and port from the browser
-            const host = window.location.hostname;
-            const currentPort = window.location.port;
+    <%- renderStyles() %>
+        <%- renderScripts() %>
 
-            // Calculate WebSocket port (current port + 1)
-            const wsPort = currentPort ? (parseInt(currentPort) + 1) : 3001;
+            <% if (NODE_ENV.includes('dev')) { %>
+                <script>
+                    // Get the current hostname and port from the browser
+                    const host = window.location.hostname;
+                    const currentPort = window.location.port;
 
-            // Create WebSocket connection using dynamic hostname and port
-            const ws = new WebSocket(`ws://${host}:${wsPort}`);
-            ws.onclose = () => {
-                setTimeout(() => location.reload(), 2000);
-            };
-        </script>
-        <% } %>
+                    // Calculate WebSocket port (current port + 1)
+                    const wsPort = currentPort ? (parseInt(currentPort) + 1) : 3001;
+
+                    // Create WebSocket connection using dynamic hostname and port
+                    const ws = new WebSocket(`ws://${host}:${wsPort}`);
+                    ws.onclose = () => {
+                        setTimeout(() => location.reload(), 2000);
+                    };
+                </script>
+                <% } %>
 
 </head>
 
 <body class="<%= bodyClass %>">
     <header>
         <%- greeting %>
-        <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/catalog">Course Catalog</a></li>
-                <li><a href="/faculty">Faculty Directory</a></li>
-                <li><a href="/demo">Middleware Demo</a></li>
-            </ul>
-        </nav>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/catalog">Course Catalog</a></li>
+                    <li><a href="/faculty">Faculty Directory</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/contact/responses">Contact Responses</a></li>
+
+                    <li><a href="/demo">Middleware Demo</a></li>
+                </ul>
+            </nav>
     </header>

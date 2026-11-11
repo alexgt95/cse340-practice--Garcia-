@@ -16,6 +16,38 @@ const getCurrentGreeting = () => {
 };
 
 /**
+ * Adds head asset management to the response.
+ * - res.addStyle(css, priority) / res.addScript(js, priority): register tags from any route
+ * - renderStyles() / renderScripts(): output them in the template, highest priority first
+ */
+const setHeadAssetsFunctionality = (res) => {
+    res.locals.styles = [];
+    res.locals.scripts = [];
+
+    res.addStyle = (css, priority = 0) => {
+        res.locals.styles.push({ content: css, priority });
+    };
+
+    res.addScript = (js, priority = 0) => {
+        res.locals.scripts.push({ content: js, priority });
+    };
+
+    res.locals.renderStyles = () => {
+        return res.locals.styles
+            .sort((a, b) => b.priority - a.priority)
+            .map(item => item.content)
+            .join('\n');
+    };
+
+    res.locals.renderScripts = () => {
+        return res.locals.scripts
+            .sort((a, b) => b.priority - a.priority)
+            .map(item => item.content)
+            .join('\n');
+    };
+};
+
+/**
  * Middleware to add local variables to res.locals for use in all templates.
  */
 const addLocalVariables = (req, res, next) => {
@@ -28,6 +60,7 @@ const addLocalVariables = (req, res, next) => {
     const randomTheme = themes[Math.floor(Math.random() * themes.length)];
     res.locals.bodyClass = randomTheme;
 
+    setHeadAssetsFunctionality(res);
     next();
 };
 
