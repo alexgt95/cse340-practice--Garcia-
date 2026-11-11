@@ -1,0 +1,28 @@
+<%- include('../../partials/header') %>
+<main>
+    <h1>Registered Users</h1>
+
+    <% if (users.length > 0) { %>
+        <div class="users-list">
+            <% users.forEach(user => { %>
+                <div class="user-card">
+                    <div class="user-header">
+                        <h3><%= user.name %></h3>
+                        <span>ID: <%= user.id %></span>
+                    </div>
+                    <div class="user-details">
+                        <p>Email: <%= user.email %></p>
+                        <p>Registered: <%= new Date(user.created_at).toLocaleString() %></p>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <p class="no-users">No users registered yet.</p>
+    <% } %>
+
+    <div class="navigation">
+        <p><a href="/register">&larr; Back to Registration</a></p>
+    </div>
+</main>
+<%- include('../../partials/footer') %>
