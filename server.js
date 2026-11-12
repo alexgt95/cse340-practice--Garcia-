@@ -9,6 +9,7 @@ import routes from './src/controllers/routes.js';
 import { addLocalVariables } from './src/middleware/global.js';
 import { setupDatabase, testConnection } from './src/models/setup.js';
 import { startSessionCleanup } from './src/utils/session-cleanup.js';
+import flash from './src/middleware/flash.js';
 
 /**
  * Server configuration
@@ -66,6 +67,9 @@ startSessionCleanup();
  * Global Middleware (must come after the session: it reads req.session)
  */
 app.use(addLocalVariables);
+
+// Flash message middleware (must come after session and global middleware)
+app.use(flash);
 
 /**
  * Routes

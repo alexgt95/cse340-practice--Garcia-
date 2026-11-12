@@ -54,3 +54,19 @@
             </nav>
 
     </header>
+
+<% 
+    const messages = flash(); // Retrieves flash messages from the session and clears them
+    const hasMessages = Object.values(messages).some(arr => arr.length > 0);
+%>
+<% if (hasMessages) { %>
+    <div class="flash-messages">
+        <% Object.keys(messages).forEach(type => { %>
+            <% messages[type].forEach(message => { %>
+                <div class="flash <%= type %>">
+                    <%= message %>
+                </div>
+            <% }); %>
+        <% }); %>
+    </div>
+<% } %>

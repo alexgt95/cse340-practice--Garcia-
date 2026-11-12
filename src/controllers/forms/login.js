@@ -25,8 +25,7 @@ const processLogin = async (req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        // Log only the messages: error objects also contain the submitted values
-        console.error('Login validation errors:', errors.array().map(error => error.msg));
+        errors.array().forEach(error => req.flash('error', error.msg));
         return res.redirect('/login');
     }
 
@@ -35,9 +34,12 @@ const processLogin = async (req, res) => {
     try {
         const user = await findUserByEmail(email);
 
-        // Specific reasons go to the console only; the user never learns which part failed
+        // Same public message for "no such user" and "wrong password", so an attacker
+        // cannot discover which emails are registered (account enumeration).
+        // The real reason goes to the console only.
         if (!user) {
             console.log('Login failed: no user with that email');
+            req.flash('error', 'Invalid email or password');
             return res.redirect('/login');
         }
 
@@ -45,6 +47,7 @@ const processLogin = async (req, res) => {
 
         if (!passwordMatches) {
             console.log('Login failed: wrong password');
+            req.flash('error', 'Invalid email or password');
             return res.redirect('/login');
         }
 
@@ -52,10 +55,11 @@ const processLogin = async (req, res) => {
         delete user.password;
         req.session.user = user;
 
-        console.log('Login successful');
+        req.flash('success', `Welcome back, ${user.name}!`);
         res.redirect('/dashboard');
     } catch (error) {
         console.error('Error during login:', error.message);
+        req.flash('error', 'Something went wrong. Please try again.');
         res.redirect('/login');
     }
 };
@@ -65,8 +69,6 @@ const processLogout = (req, res) => {
     req.session.destroy((error) => {
         if (error) {
             console.error('Error destroying session:', error.message);
-            res.clearCookie('connect.sid');
-            return res.redirect('/');
         }
         res.clearCookie('connect.sid');
         res.redirect('/');

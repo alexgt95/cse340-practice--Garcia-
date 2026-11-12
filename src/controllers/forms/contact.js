@@ -21,22 +21,23 @@ const showContactForm = (req, res) => {
     res.render('forms/contact/form', { title: 'Contact Us' });
 };
 
-// POST /contact: validate, save, then redirect (Post-Redirect-Get)
+// POST /contact: validate, save, flash a message, then redirect (Post-Redirect-Get)
 const handleContactSubmission = async (req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        console.error('Validation errors:', errors.array());
+        errors.array().forEach(error => req.flash('error', error.msg));
         return res.redirect('/contact');
     }
 
     try {
         const { subject, message } = req.body;
         await createContactForm(subject, message);
-        console.log('Contact form submitted successfully');
-        res.redirect('/contact/responses');
+        req.flash('success', 'Thank you! Your message has been sent.');
+        res.redirect('/contact');
     } catch (error) {
-        console.error('Error saving contact form:', error);
+        console.error('Error saving contact form:', error.message);
+        req.flash('error', 'Something went wrong. Please try again.');
         res.redirect('/contact');
     }
 };

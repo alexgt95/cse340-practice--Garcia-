@@ -47,8 +47,8 @@ const processRegistration = async (req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        // Log only the messages: error objects also contain the submitted values (passwords!)
-        console.error('Validation errors:', errors.array().map(error => error.msg));
+        // Only the messages are flashed: error objects also contain the submitted passwords
+        errors.array().forEach(error => req.flash('error', error.msg));
         return res.redirect('/register');
     }
 
@@ -56,7 +56,7 @@ const processRegistration = async (req, res) => {
 
     try {
         if (await emailExists(email)) {
-            console.log('Registration rejected: email already registered');
+            req.flash('warning', 'An account with that email already exists. Try logging in.');
             return res.redirect('/register');
         }
 
@@ -64,10 +64,11 @@ const processRegistration = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         await saveUser(name, email, hashedPassword);
 
-        console.log('User registered successfully');
-        res.redirect('/register/list');
+        req.flash('success', 'Registration successful! Please log in.');
+        res.redirect('/login');
     } catch (error) {
         console.error('Error registering user:', error.message);
+        req.flash('error', 'Something went wrong during registration. Please try again.');
         res.redirect('/register');
     }
 };
