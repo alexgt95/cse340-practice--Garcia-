@@ -1,7 +1,5 @@
-import { Router } from 'express';
-import { body, validationResult } from 'express-validator';
+import { validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
-import { requireLogin } from '../../middleware/auth.js';
 import {
     emailExists,
     saveUser,
@@ -11,60 +9,9 @@ import {
     deleteUser
 } from '../../models/forms/registration.js';
 
-const router = Router();
-
 // Server-side validation rules (the client-side attributes are only a convenience)
-const registrationValidation = [
-    body('name')
-        .trim()
-        .isLength({ min: 2, max: 100 })
-        .withMessage('Name must be between 2 and 100 characters')
-        .matches(/^[a-zA-Z\s'-]+$/)
-        .withMessage('Name can only contain letters, spaces, hyphens, and apostrophes'),
-    body('email')
-        .trim()
-        .isLength({ max: 255 })
-        .withMessage('Email address is too long')
-        .isEmail()
-        .withMessage('Must be a valid email address')
-        .toLowerCase(),
-    body('emailConfirm')
-        .trim()
-        .toLowerCase()
-        .custom((value, { req }) => value === req.body.email)
-        .withMessage('Email addresses must match'),
-    body('password')
-        .isLength({ min: 8, max: 128 })
-        .withMessage('Password must be between 8 and 128 characters')
-        .matches(/[0-9]/)
-        .withMessage('Password must contain at least one number')
-        .matches(/[a-z]/)
-        .withMessage('Password must contain at least one lowercase letter')
-        .matches(/[A-Z]/)
-        .withMessage('Password must contain at least one uppercase letter')
-        .matches(/[^A-Za-z0-9]/)
-        .withMessage('Password must contain at least one special character'),
-    body('passwordConfirm')
-        .custom((value, { req }) => value === req.body.password)
-        .withMessage('Passwords must match')
-];
 
 // Validation rules for editing an account (name and email only)
-const editValidation = [
-    body('name')
-        .trim()
-        .isLength({ min: 2, max: 100 })
-        .withMessage('Name must be between 2 and 100 characters')
-        .matches(/^[a-zA-Z\s'-]+$/)
-        .withMessage('Name can only contain letters, spaces, hyphens, and apostrophes'),
-    body('email')
-        .trim()
-        .isLength({ max: 255 })
-        .withMessage('Email address is too long')
-        .isEmail()
-        .withMessage('Must be a valid email address')
-        .toLowerCase()
-];
 
 // Convert a URL id to a whole number, or null if it is not one.
 // Number('12abc') is NaN, which prevents sloppy parsing and a database error.
@@ -256,11 +203,11 @@ const processDeleteAccount = async (req, res) => {
     res.redirect('/register/list');
 };
 
-router.get('/', showRegistrationForm);
-router.post('/', registrationValidation, processRegistration);
-router.get('/list', showAllUsers);
-router.get('/:id/edit', requireLogin, showEditAccountForm);
-router.post('/:id/edit', requireLogin, editValidation, processEditAccount);
-router.post('/:id/delete', requireLogin, processDeleteAccount);
-
-export default router;
+export {
+    showRegistrationForm,
+    processRegistration,
+    showAllUsers,
+    showEditAccountForm,
+    processEditAccount,
+    processDeleteAccount
+};

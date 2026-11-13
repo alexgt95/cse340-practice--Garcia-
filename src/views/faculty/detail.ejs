@@ -1,8 +1,11 @@
 <%- include('../partials/header') %>
 <main>
-    <div class="course-header">
-        <h1><%= faculty.name %></h1>
-        <p class="course-meta"><%= faculty.title %> • <%= faculty.department %></p>
+    <div class="faculty-profile">
+        <img src="/images/faculty/<%= faculty.slug %>.jpg" alt="<%= faculty.name %>" class="faculty-photo" onerror="this.onerror=null; this.src='https://placehold.co/480';">
+        <div class="course-header">
+            <h1><%= faculty.name %></h1>
+            <p class="course-meta"><%= faculty.title %> • <%= faculty.department %></p>
+        </div>
     </div>
 
     <div class="sections">
