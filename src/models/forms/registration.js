@@ -8,7 +8,7 @@ const emailExists = async (email) => {
 };
 
 // Save a new user. The password arrives already hashed. RETURNING gives back
-// the saved row WITHOUT the password column.
+// the saved row WITHOUT the password column. The role defaults to 'user'.
 const saveUser = async (name, email, hashedPassword) => {
     const query = `
         INSERT INTO users (name, email, password)
@@ -19,15 +19,48 @@ const saveUser = async (name, email, hashedPassword) => {
     return result.rows[0];
 };
 
-// Get all users, newest first. Never selects the password.
+// Get all users with their role, newest first. Never selects the password.
 const getAllUsers = async () => {
     const query = `
-        SELECT id, name, email, created_at
+        SELECT users.id, users.name, users.email, users.created_at,
+               roles.role_name AS "roleName"
         FROM users
-        ORDER BY created_at DESC
+        INNER JOIN roles ON users.role_id = roles.id
+        ORDER BY users.created_at DESC
     `;
     const result = await db.query(query);
     return result.rows;
 };
 
-export { emailExists, saveUser, getAllUsers };
+// Get one user by id, with role. Never selects the password.
+const getUserById = async (id) => {
+    const query = `
+        SELECT users.id, users.name, users.email, users.created_at,
+               roles.role_name AS "roleName"
+        FROM users
+        INNER JOIN roles ON users.role_id = roles.id
+        WHERE users.id = $1
+    `;
+    const result = await db.query(query, [id]);
+    return result.rows[0] || null;
+};
+
+// Update a user's name and email
+const updateUser = async (id, name, email) => {
+    const query = `
+        UPDATE users
+        SET name = $1, email = $2, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $3
+        RETURNING id, name, email, updated_at
+    `;
+    const result = await db.query(query, [name, email, id]);
+    return result.rows[0] || null;
+};
+
+// Delete a user. Returns true if a row was deleted.
+const deleteUser = async (id) => {
+    const result = await db.query('DELETE FROM users WHERE id = $1', [id]);
+    return result.rowCount > 0;
+};
+
+export { emailExists, saveUser, getAllUsers, getUserById, updateUser, deleteUser };

@@ -1,24 +1,37 @@
 <%- include('partials/header') %>
-<main class="dashboard">
-    <h1>Welcome, <%= user.name %>!</h1>
+    <main class="dashboard">
+        <h1>Welcome, <%= user.name %>!</h1>
 
-    <div class="user-detail">
-        <span class="label">Name:</span>
-        <span class="value"><%= user.name %></span>
-    </div>
-    <div class="user-detail">
-        <span class="label">Email:</span>
-        <span class="value"><%= user.email %></span>
-    </div>
-    <div class="user-detail">
-        <span class="label">Member since:</span>
-        <span class="value"><%= new Date(user.created_at).toLocaleDateString() %></span>
-    </div>
+        <div class="user-detail">
+            <span class="label">Name:</span>
+            <span class="value">
+                <%= user.name %>
+            </span>
+        </div>
+        <div class="user-detail">
+            <span class="label">Email:</span>
+            <span class="value">
+                <%= user.email %>
+            </span>
+        </div>
+        <div class="user-detail">
+            <span class="label">Role:</span>
+            <span class="value">
+                <%= user.roleName %>
+            </span>
+        </div>
 
-    <%# Debug block for learning: confirm the session has no password. Remove before a real launch. %>
-    <pre class="session-debug"><%= JSON.stringify(sessionData, null, 2) %></pre>
+        <div class="user-detail">
+            <span class="label">Member since:</span>
+            <span class="value">
+                <%= new Date(user.created_at).toLocaleDateString() %>
+            </span>
+        </div>
 
-    <p><a href="/logout">Log out</a></p>
-</main>
-<%- include('partials/footer') %>
-s
+        <%# Debug block for learning: confirm the session has no password. Remove before a real launch. %>
+            <pre class="session-debug"><%= JSON.stringify(sessionData, null, 2) %></pre>
+
+            <p><a href="/logout">Log out</a></p>
+    </main>
+    <%- include('partials/footer') %>
+        s
